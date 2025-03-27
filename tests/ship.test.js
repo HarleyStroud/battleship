@@ -1,4 +1,4 @@
-const Ship = require('../src/ship');
+import Ship from "../src/ship";
 
 test('Ship is not sunk before hits, but is sunk after correct number of hits', () => {
     const ship = Ship(3);
