@@ -1,11 +1,15 @@
 export default function GameBoard() {
-    let missedAttacks = [];
+    const ships = [];
+    const missedAttacks = [];
+
+    const getMissedAttacks = () => [...missedAttacks];
 
     const setBoard = (rows = 10, cols = 10) => {
         return Array.from({ length: rows }, () =>
             Array.from({ length: cols }, () => ({
                 isHit: false,
-                hasShip: false
+                hasShip: false,
+                ship: null
             }))
         );
     };
@@ -27,20 +31,49 @@ export default function GameBoard() {
         for (let i = 0; i < ship.length; i++) {
             if (orientation === 'horizontal') {
                 board[xCord][yCord + i].hasShip = true;
+                board[xCord][yCord + i].ship = ship;
             }
             else if (orientation === 'vertical') {
                 board[xCord + i][yCord].hasShip = true;
+                board[xCord + i][yCord].ship = ship;
+            }
+        }
+
+        ships.push(ship);
+    };
+
+    const receiveAttack = (row, col) => {
+        if (
+            row < 0 || col < 0 ||
+            col > board[0].length ||
+            row > board.length
+        ) {
+            throw new Error('Invalid attack placement: out of bounds');
+        }
+
+        const cell = board[row][col];
+        if (!cell.isHit) {
+            cell.isHit = true;
+
+            if (cell.hasShip) {
+                cell.ship.hit();
+            }
+            else {
+                missedAttacks.push({ row, col });
             }
         }
     };
 
-    const receiveAttack = () => {
-
-    };
-
     const areAllShipsSunk = () => {
-
+        let allSunk = true;
+        for(let i = 0; i < ships.length; i++) {
+            if(!ships[i].isSunk()) {
+                allSunk = false;
+                break;
+            }
+        }
+        return allSunk;
     };
 
-    return { placeShip, receiveAttack, areAllShipsSunk, board };
+    return { placeShip, receiveAttack, areAllShipsSunk, board, getMissedAttacks };
 }
