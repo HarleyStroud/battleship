@@ -9,7 +9,7 @@ export default function GameBoard() {
             Array.from({ length: cols }, () => ({
                 isHit: false,
                 hasShip: false,
-                ship: null
+                ship: null,
             }))
         );
     };
@@ -18,9 +18,11 @@ export default function GameBoard() {
 
     const placeShip = (ship, xCord, yCord, orientation) => {
         if (
-            xCord < 0 || yCord < 0 ||
-            orientation === 'horizontal' && yCord + ship.length > board[0].length ||
-            orientation === 'vertical' && xCord + ship.length > board.length
+            xCord < 0 ||
+            yCord < 0 ||
+            (orientation === 'horizontal' &&
+                yCord + ship.length > board[0].length) ||
+            (orientation === 'vertical' && xCord + ship.length > board.length)
         ) {
             throw new Error('Invalid ship placement: out of bounds');
         }
@@ -32,8 +34,7 @@ export default function GameBoard() {
             if (orientation === 'horizontal') {
                 board[xCord][yCord + i].hasShip = true;
                 board[xCord][yCord + i].ship = ship;
-            }
-            else if (orientation === 'vertical') {
+            } else if (orientation === 'vertical') {
                 board[xCord + i][yCord].hasShip = true;
                 board[xCord + i][yCord].ship = ship;
             }
@@ -43,31 +44,31 @@ export default function GameBoard() {
     };
 
     const receiveAttack = (row, col) => {
-        if (
-            row < 0 || col < 0 ||
-            col > board[0].length ||
-            row > board.length
-        ) {
+        if (row < 0 || col < 0 || col > board[0].length || row > board.length) {
             throw new Error('Invalid attack placement: out of bounds');
         }
 
         const cell = board[row][col];
-        if (!cell.isHit) {
-            cell.isHit = true;
-
-            if (cell.hasShip) {
-                cell.ship.hit();
-            }
-            else {
-                missedAttacks.push({ row, col });
-            }
+        if (cell.isHit) {
+            return { valid: false, message: 'Already attacked' };
         }
+
+        cell.isHit = true;
+
+        if (cell.hasShip) {
+            cell.ship.hit();
+            return { valid: true, hit: true, sunk: cell.ship.isSunk() };
+        } else {
+            missedAttacks.push({ row, col });
+        }
+
+        return { valid: true, hit: false, sunk: false };
     };
 
     const areAllShipsSunk = () => {
         let allSunk = true;
-        for(let i = 0; i < ships.length; i++) {
-            if(!ships[i].isSunk()) {
+        for (let i = 0; i < ships.length; i++) {
+            if (!ships[i].isSunk()) {
                 allSunk = false;
                 break;
             }
@@ -75,5 +76,11 @@ export default function GameBoard() {
         return allSunk;
     };
 
-    return { placeShip, receiveAttack, areAllShipsSunk, board, getMissedAttacks };
+    return {
+        placeShip,
+        receiveAttack,
+        areAllShipsSunk,
+        board,
+        getMissedAttacks,
+    };
 }

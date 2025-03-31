@@ -1,19 +1,22 @@
+import GameController from './index.js';
+
 const mainContainer = document.querySelector('.main-container');
 
+function renderUI(players, currentPlayer) {
+    mainContainer.textContent = '';
+    renderCurrentTurn(currentPlayer);
+    renderBoard(players[0].gameboard.board, 'Player');
+    renderBoard(players[1].gameboard.board, 'Computer');
+}
+
+function renderCurrentTurn(currentPlayer) {
+    const currentPlayerTurn = document.createElement('h2');
+    currentPlayerTurn.textContent = currentPlayer;
+    mainContainer.appendChild(currentPlayerTurn);
+}
+
 function renderBoard(board, playerName) {
-    const gameContainer = document.createElement('div');
-    gameContainer.classList.add('game-container');
-
-    const boardTitle = document.createElement('h2');
-    boardTitle.textContent = playerName;
-    gameContainer.appendChild(boardTitle);
-
-    const gameBoard = document.createElement('div');
-    gameBoard.classList.add('game-board');
-    gameBoard.textContent = '';
-    gameContainer.appendChild(gameBoard);
-
-    mainContainer.appendChild(gameContainer);
+    const gameBoard = createGameBoard(mainContainer, playerName);
 
     const rows = board.length;
     const columns = board[0].length;
@@ -28,9 +31,42 @@ function renderBoard(board, playerName) {
             boardCell.style.gridRow = row + 2;
             boardCell.style.gridColumn = col + 2;
             boardCell.classList.add('board-cell');
+
+            boardCell.addEventListener('click', () => {
+                handleCellClick(row, col);
+            });
+
+            if (board[row][col].isHit) {
+                if (board[row][col].hasShip) {
+                    boardCell.classList.add('board-cell-ship-hit');
+                } else {
+                    boardCell.classList.add('board-cell-hit');
+                }
+            } else {
+                if (board[row][col].hasShip) {
+                    boardCell.classList.add('board-cell-ship');
+                }
+            }
+
             gameBoard.appendChild(boardCell);
         }
     }
+}
+
+function createGameBoard(mainContainer, playerName) {
+    const gameContainer = document.createElement('div');
+    gameContainer.classList.add('game-container');
+
+    const boardTitle = document.createElement('h2');
+    boardTitle.textContent = playerName;
+    gameContainer.appendChild(boardTitle);
+
+    const gameBoard = document.createElement('div');
+    gameBoard.classList.add('game-board');
+    gameContainer.appendChild(gameBoard);
+    mainContainer.appendChild(gameContainer);
+
+    return gameBoard;
 }
 
 function addColumnLabels(gameBoard, columns) {
@@ -56,4 +92,9 @@ function addRowLabels(gameBoard, rows) {
     }
 }
 
-export default { renderBoard };
+function handleCellClick(row, col) {
+    console.log(`Cell clicked at: ${row}, ${col}`);
+    GameController.takeTurn(row, col);
+}
+
+export default { renderUI, renderBoard };

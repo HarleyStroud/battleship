@@ -52,8 +52,8 @@ ul, ol {
 
 .game-board {
     display: grid;
-    height: 600px;
-    width: 600px;
+    height: 500px;
+    width: 500px;
     border: 1px solid black;
     grid-template-columns: repeat(11, 1fr);
     grid-template-rows: repeat(11, 1fr);
@@ -68,4 +68,17 @@ ul, ol {
 
 .board-cell {
     border: 1px solid black;
+    background: rgb(105, 125, 240);
+}
+
+.board-cell-hit {
+    background: white;
+}
+
+.board-cell-ship {
+    background: #c5aaaa;
+}
+
+.board-cell-ship-hit {
+    background: red;
 }
