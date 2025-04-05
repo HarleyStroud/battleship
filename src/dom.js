@@ -5,8 +5,8 @@ const mainContainer = document.querySelector('.main-container');
 function renderUI(players, currentPlayer) {
     mainContainer.textContent = '';
     renderCurrentTurn(currentPlayer);
-    renderBoard(players[0].gameboard.board, 'Player');
-    renderBoard(players[1].gameboard.board, 'Computer');
+    renderBoard(players[0].gameboard.board, 'Player', currentPlayer);
+    renderBoard(players[1].gameboard.board, 'Computer', currentPlayer);
 }
 
 function renderCurrentTurn(currentPlayer) {
@@ -15,7 +15,7 @@ function renderCurrentTurn(currentPlayer) {
     mainContainer.appendChild(currentPlayerTurn);
 }
 
-function renderBoard(board, playerName) {
+function renderBoard(board, playerName, currentPlayer) {
     const gameBoard = createGameBoard(mainContainer, playerName);
 
     const rows = board.length;
@@ -32,10 +32,12 @@ function renderBoard(board, playerName) {
             boardCell.style.gridColumn = col + 2;
             boardCell.classList.add('board-cell');
 
-            boardCell.addEventListener('click', () => {
-                handleCellClick(row, col);
-            });
-
+            if (playerName !== currentPlayer) {
+                boardCell.addEventListener('click', () => {
+                    handleCellClick(row, col);
+                });
+            }
+            
             if (board[row][col].isHit) {
                 if (board[row][col].hasShip) {
                     boardCell.classList.add('board-cell-ship-hit');
