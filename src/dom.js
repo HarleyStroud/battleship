@@ -129,4 +129,12 @@ function handleCellClick(row, col) {
     GameController.takeTurn(row, col);
 }
 
-export default { renderUI, renderBoard, renderAttackResultMessage };
+function renderGameOverDisplay(winnerName) {
+    const gameStatusContainer = document.querySelector('.game-status-container');
+    gameStatusContainer.textContent = '';
+    const gameOverMessage = document.createElement('h2');
+    gameOverMessage.textContent = `All Ships Sunk!\n${winnerName} Wins!`;
+    gameStatusContainer.appendChild(gameOverMessage);
+}
+
+export default { renderUI, renderAttackResultMessage, renderGameOverDisplay };

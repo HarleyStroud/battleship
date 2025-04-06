@@ -5,6 +5,7 @@ import dom from './dom.js';
 const GameController = (() => {
     const players = [];
     let currentPlayer = '';
+    let gameOVer = false;
 
     const startGame = () => {
         const player = Player('Player');
@@ -14,7 +15,6 @@ const GameController = (() => {
         currentPlayer = players[0];
 
         player.gameboard.placeShip(Ship(3), 0, 0, 'horizontal');
-        player.gameboard.placeShip(Ship(4), 0, 0, 'horizontal');
 
         computerPlayer.gameboard.placeShip(Ship(5), 5, 7, 'vertical');
 
@@ -22,6 +22,7 @@ const GameController = (() => {
     };
 
     const takeTurn = (row, column) => {
+        if(gameOVer) return;
         let targetBoard = {};
 
         if (currentPlayer === players[0]) {
@@ -35,6 +36,16 @@ const GameController = (() => {
 
         console.log(attackResult);
         if(!attackResult.valid) return;
+
+        if(attackResult.sunk) {
+            const isGameOver = targetBoard.areAllShipsSunk();
+            if(isGameOver) {
+                gameOVer = true;
+                dom.renderUI(players, currentPlayer.playerName);
+                dom.renderGameOverDisplay(currentPlayer.playerName);
+                return;
+            }
+        }
 
         switchPlayerTurn();
         dom.renderUI(players, currentPlayer.playerName);
