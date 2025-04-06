@@ -7,7 +7,7 @@ const GameController = (() => {
     let currentPlayer = '';
 
     const startGame = () => {
-        const player = Player('Player One');
+        const player = Player('Player');
         const computerPlayer = Player('Computer');
         players[0] = player;
         players[1] = computerPlayer;
@@ -38,6 +38,7 @@ const GameController = (() => {
 
         switchPlayerTurn();
         dom.renderUI(players, currentPlayer.playerName);
+        dom.renderAttackResultMessage(attackResult.message);
     };
 
     const switchPlayerTurn = () => {

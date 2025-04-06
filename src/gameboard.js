@@ -57,12 +57,28 @@ export default function GameBoard() {
 
         if (cell.hasShip) {
             cell.ship.hit();
-            return { valid: true, hit: true, sunk: cell.ship.isSunk() };
-        } else {
+            if (cell.ship.isSunk()) {
+                return {
+                    valid: true,
+                    hit: true,
+                    sunk: cell.ship.isSunk(),
+                    message: 'Ship Sunk!',
+                };
+            }
+            else {
+                return {
+                    valid: true,
+                    hit: true,
+                    sunk: cell.ship.isSunk(),
+                    message: 'Ship Hit!',
+                };
+            }
+        }
+        else {
             missedAttacks.push({ row, col });
         }
 
-        return { valid: true, hit: false, sunk: false };
+        return { valid: true, hit: false, sunk: false, message: "Miss!" };
     };
 
     const areAllShipsSunk = () => {

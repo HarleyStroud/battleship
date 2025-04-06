@@ -1,22 +1,52 @@
 import GameController from './index.js';
 
-const mainContainer = document.querySelector('.main-container');
+const gameContainer = document.querySelector('.game-container');
 
 function renderUI(players, currentPlayer) {
-    mainContainer.textContent = '';
+    gameContainer.textContent = '';
+
     renderCurrentTurn(currentPlayer);
-    renderBoard(players[0].gameboard.board, 'Player', currentPlayer);
-    renderBoard(players[1].gameboard.board, 'Computer', currentPlayer);
+    const bothPlayerBoardsContainer = document.createElement('div');
+    bothPlayerBoardsContainer.classList.add('both-players-board-container');
+    gameContainer.appendChild(bothPlayerBoardsContainer);
+
+    renderBoard(
+        bothPlayerBoardsContainer,
+        players[0].gameboard.board,
+        'Player',
+        currentPlayer
+    );
+    renderBoard(
+        bothPlayerBoardsContainer,
+        players[1].gameboard.board,
+        'Computer',
+        currentPlayer
+    );
 }
 
 function renderCurrentTurn(currentPlayer) {
+    const gameStatusContainer = document.createElement('div');
     const currentPlayerTurn = document.createElement('h2');
-    currentPlayerTurn.textContent = currentPlayer;
-    mainContainer.appendChild(currentPlayerTurn);
+    gameStatusContainer.classList.add('game-status-container');
+    currentPlayerTurn.textContent = `${currentPlayer} Turn`;
+    gameStatusContainer.appendChild(currentPlayerTurn);
+    gameContainer.appendChild(gameStatusContainer);
 }
 
-function renderBoard(board, playerName, currentPlayer) {
-    const gameBoard = createGameBoard(mainContainer, playerName);
+function renderAttackResultMessage(resultMessage) {
+    const gameStatusContainer = document.querySelector('.game-status-container');
+    const attackResult = document.createElement("h2");
+    attackResult.textContent = resultMessage;
+    attackResult.style.order = '1';
+    gameStatusContainer.appendChild(attackResult);
+}
+
+function renderBoard(
+    bothPlayerBoardsContainer, board,
+    playerName,
+    currentPlayer
+) {
+    const gameBoard = createGameBoard(bothPlayerBoardsContainer, playerName);
 
     const rows = board.length;
     const columns = board[0].length;
@@ -37,7 +67,7 @@ function renderBoard(board, playerName, currentPlayer) {
                     handleCellClick(row, col);
                 });
             }
-            
+
             if (board[row][col].isHit) {
                 if (board[row][col].hasShip) {
                     boardCell.classList.add('board-cell-ship-hit');
@@ -55,18 +85,18 @@ function renderBoard(board, playerName, currentPlayer) {
     }
 }
 
-function createGameBoard(mainContainer, playerName) {
-    const gameContainer = document.createElement('div');
-    gameContainer.classList.add('game-container');
+function createGameBoard(bothPlayerBoardsContainer, playerName) {
+    const gameBoardContainer = document.createElement('div');
+    gameBoardContainer.classList.add('game-board-container');
 
     const boardTitle = document.createElement('h2');
     boardTitle.textContent = playerName;
-    gameContainer.appendChild(boardTitle);
+    gameBoardContainer.appendChild(boardTitle);
 
     const gameBoard = document.createElement('div');
     gameBoard.classList.add('game-board');
-    gameContainer.appendChild(gameBoard);
-    mainContainer.appendChild(gameContainer);
+    gameBoardContainer.appendChild(gameBoard);
+    bothPlayerBoardsContainer.appendChild(gameBoardContainer);
 
     return gameBoard;
 }
@@ -99,4 +129,4 @@ function handleCellClick(row, col) {
     GameController.takeTurn(row, col);
 }
 
-export default { renderUI, renderBoard };
+export default { renderUI, renderBoard, renderAttackResultMessage };
